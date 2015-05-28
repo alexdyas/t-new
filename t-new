@@ -1,0 +1,28 @@
+#!/bin/bash
+# -----------------------------------------------------------------------------
+# Script        - t-new
+#
+# Description   - Multiple ssh to hosts in a new tmux window and individual
+#                 panes
+#
+# Usage         - t-new host1 host2 host3 host4
+#
+# Author        - Alexander Dyas
+#
+# Version       - 201505281245
+# -----------------------------------------------------------------------------
+
+tmux new-window
+
+hosts=( "$@" )
+counthosts=${#hosts[@]}
+tmux send-keys "ssh ${hosts[0]}" C-m
+if [ $counthosts -gt 1 ]
+then
+  for (( i=2; i<${counthosts}+1; i++ ));
+  do
+      tmux split-window -h
+      tmux select-layout even-vertical
+      tmux send-keys "ssh ${hosts[$i-1]}" C-m
+  done
+fi
